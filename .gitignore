@@ -1,0 +1,14 @@
+outputs/*
+!outputs/.gitkeep
+customer_files/
+real_customer_inputs/
+skills/_archives/
+skills/pdf-seal-stamp/assets/douzone_seal.png
+*.pdf
+*.env
+.DS_Store
+__pycache__/
+.pytest_cache/
+.venv/
+*_실제고객사.xlsx
+*_실제고객사.hwpx

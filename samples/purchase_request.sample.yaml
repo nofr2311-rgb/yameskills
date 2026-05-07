@@ -1,0 +1,16 @@
+customer_name: 가상테스트주식회사
+request_type: 기존고객 추가구매
+product: Amaranth 10
+payment_type: 월납
+sales_owner: 홍길동 매니저
+writer: 홍길동 매니저
+quote_date: 2026-05-07
+items:
+  - name: 그룹웨어 사용자
+    quantity: 100
+    unit: 유저
+    memo: 추가 구매 샘플
+  - name: 전자결재
+    quantity: 100
+    unit: 유저
+memo: 샘플 데이터입니다. 실제 고객정보가 아닙니다.
