@@ -1,5 +1,4 @@
-outputs/*
-!outputs/.gitkeep
+outputs/
 customer_files/
 real_customer_inputs/
 skills/_archives/
