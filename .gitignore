@@ -3,7 +3,6 @@ outputs/*
 customer_files/
 real_customer_inputs/
 skills/_archives/
-skills/pdf-seal-stamp/assets/douzone_seal.png
 *.pdf
 *.env
 .DS_Store
