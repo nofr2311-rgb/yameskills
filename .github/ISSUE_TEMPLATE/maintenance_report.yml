@@ -1,0 +1,41 @@
+name: 유지보수 보고서 생성
+description: 이전 HWPX, 온라인상담 PDF, 유선상담 PDF를 첨부하면 새 유지보수 HWPX를 생성합니다.
+title: "[유지보수] 보고서 생성"
+labels: ["maintenance-report"]
+body:
+  - type: textarea
+    id: files
+    attributes:
+      label: 파일 첨부
+      description: 이전 월 HWPX 1개, 온라인상담 PDF 1개, 유선상담 PDF 1개를 첨부하세요.
+      placeholder: "hwpx/pdf 파일을 첨부하면 링크가 자동으로 들어갑니다."
+    validations:
+      required: true
+  - type: input
+    id: year
+    attributes:
+      label: 연도
+      placeholder: "2026"
+    validations:
+      required: false
+  - type: input
+    id: prev_month
+    attributes:
+      label: 이전 월
+      placeholder: "04월"
+    validations:
+      required: false
+  - type: input
+    id: month
+    attributes:
+      label: 생성 월
+      placeholder: "05월"
+    validations:
+      required: false
+  - type: input
+    id: report_date
+    attributes:
+      label: 작성일
+      placeholder: "2026-05-08"
+    validations:
+      required: false

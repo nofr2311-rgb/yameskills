@@ -34,6 +34,7 @@ def main() -> int:
     parser.add_argument("--body-file", required=True)
     parser.add_argument("--extension", required=True, help="Expected extension, for example pdf or xlsx")
     parser.add_argument("--output", required=True)
+    parser.add_argument("--all", action="store_true", help="Download all matching attachments into --output directory")
     args = parser.parse_args()
 
     text = Path(args.body_file).read_text(encoding="utf-8")
@@ -42,15 +43,27 @@ def main() -> int:
         print(f"No .{args.extension.lstrip('.')} attachment URL found in issue body.", file=sys.stderr)
         return 1
 
-    label, url = found[0]
-    output = Path(args.output)
-    output.parent.mkdir(parents=True, exist_ok=True)
+    if args.all:
+        output_dir = Path(args.output)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        for index, (label, url) in enumerate(found, start=1):
+            suffix = Path(label.split("?")[0]).suffix or f".{args.extension.lstrip('.')}"
+            output = output_dir / f"attachment_{index}{suffix}"
+            download(label, url, output)
+    else:
+        label, url = found[0]
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        download(label, url, output)
+    return 0
+
+
+def download(label: str, url: str, output: Path) -> None:
     print(f"Downloading {label}: {url}")
     request = urllib.request.Request(url, headers={"User-Agent": "yameskills-actions"})
     with urllib.request.urlopen(request) as response:
         output.write_bytes(response.read())
     print(f"Saved {output} ({output.stat().st_size} bytes)")
-    return 0
 
 
 if __name__ == "__main__":

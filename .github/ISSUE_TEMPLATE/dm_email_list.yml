@@ -1,0 +1,20 @@
+name: DM 이메일 리스트 생성
+description: 미가공 고객사 Excel 파일을 첨부하면 이메일 주소를 추출해 DM 발송용 xlsx를 생성합니다.
+title: "[DM] 이메일 리스트 생성"
+labels: ["dm-emaillist"]
+body:
+  - type: textarea
+    id: files
+    attributes:
+      label: 고객사 Excel 파일
+      description: xlsx 파일을 하나 이상 드래그해서 첨부하세요.
+      placeholder: "고객사 엑셀 파일을 첨부하면 링크가 자동으로 들어갑니다."
+    validations:
+      required: true
+  - type: textarea
+    id: memo
+    attributes:
+      label: 메모
+      placeholder: "필요한 필터나 제외 조건이 있으면 적어주세요."
+    validations:
+      required: false

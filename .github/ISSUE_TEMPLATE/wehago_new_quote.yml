@@ -1,0 +1,20 @@
+name: WEHAGO 신규견적 생성
+description: 인바운드/통화 내용을 붙여넣거나 txt 파일로 첨부하면 WEHAGO 신규 견적 xlsx를 생성합니다.
+title: "[WEHAGO] 신규견적 생성"
+labels: ["wehago-new-quote"]
+body:
+  - type: textarea
+    id: call_text
+    attributes:
+      label: 인바운드/통화 내용
+      description: 통화 내용을 그대로 붙여넣으세요. txt 파일을 첨부해도 됩니다.
+      placeholder: "예: OO회사에서 WEHAGO 회계 2인, 인사급여 2인, Smart A10 사용료 2인 견적 요청"
+    validations:
+      required: true
+  - type: textarea
+    id: memo
+    attributes:
+      label: 메모
+      placeholder: "월납/연납, CLUB/PRO, 추가 서비스가 있으면 적어주세요."
+    validations:
+      required: false
