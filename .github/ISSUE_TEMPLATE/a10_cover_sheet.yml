@@ -1,0 +1,21 @@
+name: A10 갑지 생성
+description: A10 견적서 xlsx 또는 pdf를 첨부하면 갑지 xlsx/pdf를 생성합니다.
+title: "[갑지] A10 갑지 생성"
+labels: ["a10-cover-sheet"]
+body:
+  - type: textarea
+    id: file
+    attributes:
+      label: 견적서 파일
+      description: A10 견적서 xlsx 또는 pdf 파일을 드래그해서 첨부하세요.
+      placeholder: "xlsx 또는 pdf 파일을 첨부하면 링크가 자동으로 들어갑니다."
+    validations:
+      required: true
+  - type: textarea
+    id: memo
+    attributes:
+      label: 메모
+      description: 특이사항이 있으면 적어주세요.
+      placeholder: "예: 갑지만 생성해주세요."
+    validations:
+      required: false

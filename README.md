@@ -1,66 +1,92 @@
 # Yame Skills
 
-Claude에서 사용하던 업무 자동화 Skill 자료 중, 구매신청서 생성기를 제외한 나머지 스킬을 보관하는 repo입니다.
+Claude에서 쓰던 더존 업무 자동화 스킬을 GitHub 웹/모바일에서 실행할 수 있게 옮기는 repo입니다.
 
-구매신청서 CLI 작업은 별도 repo에서 관리합니다.
+가격표 기반 구매신청서/견적 자동화는 별도 repo에서 관리합니다.
 
 - https://github.com/nofr2311-rgb/douzone-quote-bot
 
-## 포함된 스킬
+이 repo는 그 외 작업, 예를 들면 PDF 인장 찍기, Amaranth 10 갑지 생성, WEHAGO/A10 신규 견적 템플릿 이관 같은 작업을 담당합니다.
+
+## 지금 바로 쓸 수 있는 기능
+
+### PDF 인장 찍기
+
+1. GitHub 모바일 앱이나 웹에서 이 repo의 Issues로 이동합니다.
+2. **New issue**를 누릅니다.
+3. **PDF 인장 찍기** 템플릿을 선택합니다.
+4. PDF 파일을 본문에 첨부합니다.
+5. 필요하면 page, x, y, size, alpha 값을 입력합니다.
+6. Issue를 만들면 Actions가 실행되고, 완료 댓글에 인장 찍힌 PDF 링크가 달립니다.
+
+기본값:
+
+```text
+page: 2
+x: 493
+y: 100
+size: 58
+alpha: 180
+```
+
+### A10 갑지 생성
+
+1. GitHub 모바일 앱이나 웹에서 이 repo의 Issues로 이동합니다.
+2. **New issue**를 누릅니다.
+3. **A10 갑지 생성** 템플릿을 선택합니다.
+4. A10 견적서 xlsx 또는 pdf 파일을 첨부합니다.
+5. Issue를 만들면 Actions가 실행되고, 완료 댓글에 갑지 PDF/XLSX 링크가 달립니다.
+
+## 앞으로 붙일 스킬
+
+아래 스킬들은 원본 `SKILL.md`, 기존 스크립트, 템플릿을 `skills/` 아래에 보존했습니다.
 
 - `a10-new-quote`: Amaranth 10 신규 고객 견적서 생성
 - `wehago-new-quote`: WEHAGO 신규 고객 견적서 생성
-- `a10-cover-sheet`: Amaranth 10 갈지/가격제안서 요약
-- `pdf-seal-stamp`: PDF 인감/직인 오버레이
-- `hwp-reader`: HWP/HWPX 읽기, 분석, 생성 유틸리티
+- `a10-cover-sheet`: Amaranth 10 갑지 생성
+- `pdf-seal-stamp`: PDF 인장/직인 오버레이
+- `hwp-reader`: HWP/HWPX 읽기, 분석, 생성
 - `douzone-maintenance-report`: 더존 유지보수 이력표 HWPX 생성
-- `douzone-dm-emaillist`: DM 발송용 이메일 리스트 및 고객 구성 분석
+- `douzone-dm-emaillist`: DM 발송용 이메일 리스트 분석
+
+## 웹 Codex로 기능 추가하기
+
+`chatgpt.com/codex`에서 이 repo를 선택하고 이렇게 요청하면 됩니다.
+
+```text
+이 repo의 README와 skills/wehago-new-quote/SKILL.md를 먼저 읽어줘.
+WEHAGO 신규 견적서 생성 기능을 GitHub Issue 첨부/입력으로 실행할 수 있게 만들어줘.
+완료되면 모바일에서 Issue만 만들어도 결과 xlsx를 받을 수 있어야 해.
+```
+
+또는:
+
+```text
+skills/a10-new-quote를 참고해서
+GitHub Issue에 Amaranth10 견적 조건을 적으면 견적서 xlsx를 만들어주는 Actions 자동화를 추가해줘.
+```
 
 ## 구조
 
 ```text
+.github/
+  ISSUE_TEMPLATE/
+  workflows/
+scripts/
+  download_issue_attachment.py
 skills/
-  a10-new-quote/
-    SKILL.md
-    TODO.md
-    templates/
-  wehago-new-quote/
-    SKILL.md
-    TODO.md
-    templates/
   a10-cover-sheet/
-    SKILL.md
-    TODO.md
-    scripts/
-    assets/
-  pdf-seal-stamp/
-    SKILL.md
-    TODO.md
-    scripts/
-    assets/
-  hwp-reader/
-    SKILL.md
-    TODO.md
-    scripts/
-    assets/
-  douzone-maintenance-report/
-    SKILL.md
-    TODO.md
-    scripts/
+  a10-new-quote/
   douzone-dm-emaillist/
-    SKILL.md
-    TODO.md
-    scripts/
+  douzone-maintenance-report/
+  hwp-reader/
+  pdf-seal-stamp/
+  wehago-new-quote/
+generated/
 ```
-
-## 현재 상태
-
-각 폴더에는 Claude Skill에서 추출한 `SKILL.md`, 기존 스크립트, 템플릿, 자산을 보존했습니다. `TODO.md`에는 Codex/GitHub 기반 CLI로 이관할 때 필요한 후속 작업을 정리했습니다.
-
-아직 이 repo 자체는 통합 Python CLI 패키지가 아닙니다. 실제 실행형 CLI 구현은 스킬별로 별도 작업하면서 추가할 예정입니다.
 
 ## 주의
 
-- 실제 고객 정보, 계약서, 견적 산출물은 commit하지 않습니다.
-- `customer_files/`, `real_customer_inputs/`, `.env`, PDF 산출물, 실제 고객사명 포함 산출물은 `.gitignore`로 제외합니다.
-- `pdf-seal-stamp`의 `douzone_seal.png`는 요청에 따라 repo에 포함했습니다. 공개 범위 변경 전에는 민감 자산 여부를 다시 확인하세요.
+- Issue에 첨부한 파일과 생성 결과는 repo에 commit될 수 있습니다. private repo 기준으로 운영하세요.
+- 실제 고객 정보, 계약서, 견적 금액, 인감 이미지가 포함될 수 있으니 공개 repo로 전환하지 마세요.
+- 결과물은 `generated/<기능명>/issue-번호/run-id/` 아래에 저장됩니다.

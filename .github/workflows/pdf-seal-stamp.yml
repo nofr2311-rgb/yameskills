@@ -1,0 +1,134 @@
+name: PDF Seal Stamp
+
+on:
+  workflow_dispatch:
+    inputs:
+      file_url:
+        description: "PDF URL"
+        required: true
+      page:
+        description: "Page"
+        required: false
+        default: "2"
+      x:
+        description: "X"
+        required: false
+        default: "493"
+      y:
+        description: "Y"
+        required: false
+        default: "100"
+      size:
+        description: "Seal size"
+        required: false
+        default: "58"
+      alpha:
+        description: "Alpha 0-255"
+        required: false
+        default: "180"
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  stamp:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'pdf-seal-stamp') || contains(github.event.issue.title, '인장') || contains(github.event.issue.title, '직인') || contains(github.event.issue.title, 'seal')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Prepare input
+        shell: bash
+        env:
+          FILE_URL: ${{ inputs.file_url }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          mkdir -p work outputs
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            curl -L "$FILE_URL" -o work/input.pdf
+          else
+            printf '%s\n' "$ISSUE_BODY" > work/issue_body.md
+            python scripts/download_issue_attachment.py --body-file work/issue_body.md --extension pdf --output work/input.pdf
+          fi
+
+      - name: Stamp PDF
+        shell: bash
+        env:
+          PAGE: ${{ inputs.page || '2' }}
+          X: ${{ inputs.x || '493' }}
+          Y: ${{ inputs.y || '100' }}
+          SIZE: ${{ inputs.size || '58' }}
+          ALPHA: ${{ inputs.alpha || '180' }}
+        run: |
+          python skills/pdf-seal-stamp/scripts/overlay_seal.py \
+            work/input.pdf \
+            outputs/stamped.pdf \
+            --seal skills/pdf-seal-stamp/assets/douzone_seal.png \
+            --page "$PAGE" \
+            --x "$X" \
+            --y "$Y" \
+            --size "$SIZE" \
+            --alpha "$ALPHA"
+
+      - name: Publish files to repository
+        if: success() && github.event_name == 'issues'
+        id: publish
+        shell: bash
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          dest="generated/pdf-seal-stamp/issue-${ISSUE_NUMBER}/${RUN_ID}"
+          mkdir -p "$dest"
+          cp outputs/stamped.pdf "$dest"/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main
+          git add -f "$dest"
+          git commit -m "Add stamped PDF for issue #${ISSUE_NUMBER}" || true
+          git push
+          echo "pdf_path=${dest}/stamped.pdf" >> "$GITHUB_OUTPUT"
+
+      - name: Upload artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stamped-pdf-${{ github.run_id }}
+          path: outputs/stamped.pdf
+          retention-days: 30
+
+      - name: Comment result
+        if: always() && github.event_name == 'issues'
+        uses: actions/github-script@v7
+        env:
+          JOB_STATUS: ${{ job.status }}
+          PDF_PATH: ${{ steps.publish.outputs.pdf_path }}
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const encodePath = (path) => path.split('/').map(encodeURIComponent).join('/');
+            const rawUrl = (path) => `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/raw/main/${encodePath(path)}`;
+            const body = process.env.JOB_STATUS === 'success'
+              ? `인장 PDF 생성이 완료되었습니다.\n\n- [PDF 다운로드](${rawUrl(process.env.PDF_PATH)})\n\nActions 로그: ${runUrl}`
+              : `인장 PDF 생성에 실패했습니다. PDF 첨부 여부와 좌표 값을 확인해주세요.\n\nActions 로그: ${runUrl}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });

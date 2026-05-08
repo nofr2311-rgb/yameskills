@@ -1,0 +1,48 @@
+name: PDF 인장 찍기
+description: PDF 파일을 첨부하면 더존 인장을 찍은 PDF를 생성합니다.
+title: "[인장] PDF 인장 찍기"
+labels: ["pdf-seal-stamp"]
+body:
+  - type: textarea
+    id: file
+    attributes:
+      label: PDF 파일
+      description: 여기에 PDF 파일을 드래그해서 첨부하세요.
+      placeholder: "PDF 파일을 첨부하면 링크가 자동으로 들어갑니다."
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: 페이지
+      placeholder: "2"
+    validations:
+      required: false
+  - type: input
+    id: x
+    attributes:
+      label: X 좌표
+      placeholder: "493"
+    validations:
+      required: false
+  - type: input
+    id: y
+    attributes:
+      label: Y 좌표
+      placeholder: "100"
+    validations:
+      required: false
+  - type: input
+    id: size
+    attributes:
+      label: 인장 크기
+      placeholder: "58"
+    validations:
+      required: false
+  - type: input
+    id: alpha
+    attributes:
+      label: 투명도
+      placeholder: "180"
+    validations:
+      required: false
